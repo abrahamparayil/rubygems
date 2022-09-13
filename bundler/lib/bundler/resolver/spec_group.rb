@@ -12,6 +12,7 @@ module Bundler
         @source = exemplary_spec.source
         @specs = specs
         @platforms = specs.map(&:platform).sort_by(&:to_s).uniq
+        @ruby_only = @platforms == [Gem::Platform::RUBY]
       end
 
       def to_specs(force_ruby_platform)
@@ -23,6 +24,14 @@ module Bundler
           lazy_spec.dependencies.replace s.dependencies
           lazy_spec
         end
+      end
+
+      def sort_obj
+        [@version, @ruby_only ? -1 : 1]
+      end
+
+      def <=>(other)
+        sort_obj <=> other.sort_obj
       end
 
       def to_s
