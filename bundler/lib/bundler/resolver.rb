@@ -31,8 +31,6 @@ module Bundler
         h[k] = Resolver::Package.new(k)
       end
 
-      requirements.each {|dep| @packages[dep.name] = Resolver::Package.new(dep.name, dep.prerelease?) }
-
       verify_gemfile_dependencies_are_found!(requirements)
       result = @resolver.resolve(requirements).
         map(&:payload).
@@ -225,6 +223,8 @@ module Bundler
     def verify_gemfile_dependencies_are_found!(requirements)
       requirements.map! do |requirement|
         name = requirement.name
+        @packages[name] = Resolver::Package.new(name, requirement.prerelease?)
+
         next requirement if name == "bundler"
         next if requirement.gem_platforms(@platforms).empty?
         next requirement unless search_for(requirement).empty?
