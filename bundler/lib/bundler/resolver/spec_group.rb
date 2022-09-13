@@ -11,8 +11,6 @@ module Bundler
         @version = exemplary_spec.version
         @source = exemplary_spec.source
         @specs = specs
-        @platforms = specs.map(&:platform).sort_by(&:to_s).uniq
-        @ruby_only = @platforms == [Gem::Platform::RUBY]
       end
 
       def to_specs(force_ruby_platform)
@@ -26,16 +24,8 @@ module Bundler
         end
       end
 
-      def sort_obj
-        [@version, @ruby_only ? -1 : 1]
-      end
-
-      def <=>(other)
-        sort_obj <=> other.sort_obj
-      end
-
       def to_s
-        "#{name} (#{version}) (#{@platforms.join(", ")})"
+        sorted_spec_names.join(", ")
       end
 
       def dependencies
@@ -52,6 +42,7 @@ module Bundler
 
       def eql?(other)
         return unless other.is_a?(SpecGroup)
+
         sorted_spec_names.eql?(other.sorted_spec_names)
       end
 

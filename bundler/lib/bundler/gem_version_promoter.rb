@@ -45,13 +45,13 @@ module Bundler
     # preference to the current level (:major, :minor or :patch) when resolution
     # is deciding what versions best resolve all dependencies in the bundle.
     # @param package [Resolver::Package] The package being resolved.
-    # @param specs [Specification] An array of Specifications for the package.
+    # @param versions [Specification] An array of Specifications for the package.
     # @return [Specification] A new instance of the Specification Array sorted and
     #    possibly filtered.
-    def sort_versions(package, specs)
-      specs = filter_dep_specs(specs, package) if strict
+    def sort_versions(package, versions)
+      versions = filter_dep_versions(versions, package) if strict
 
-      sort_dep_specs(specs, package)
+      sort_dep_versions(versions, package)
     end
 
     # @return [bool] Convenience method for testing value of level variable.
@@ -66,12 +66,12 @@ module Bundler
 
     private
 
-    def filter_dep_specs(specs, package)
+    def filter_dep_versions(versions, package)
       locked_version = package.locked_version
 
-      specs.select do |spec|
+      versions.select do |version|
         if locked_version && !major?
-          gsv = spec.version
+          gsv = version.rubygems_version
           lsv = locked_version
 
           must_match = minor? ? [0] : [0, 1]
@@ -84,12 +84,12 @@ module Bundler
       end
     end
 
-    def sort_dep_specs(specs, package)
+    def sort_dep_versions(versions, package)
       locked_version = package.locked_version
 
-      result = specs.sort do |a, b|
-        a_ver = a.version
-        b_ver = b.version
+      result = versions.sort do |a, b|
+        a_ver = a
+        b_ver = b
 
         unless locked_version && package.prerelease_specified?
           a_pre = a_ver.prerelease?
@@ -115,7 +115,7 @@ module Bundler
     end
 
     def either_version_older_than_locked(a_ver, b_ver, locked_version)
-      locked_version && (a_ver < locked_version || b_ver < locked_version)
+      locked_version && (a_ver.rubygems_version < locked_version || b_ver.rubygems_version < locked_version)
     end
 
     def segments_do_not_match(a_ver, b_ver, level)
@@ -136,7 +136,7 @@ module Bundler
     end
 
     def move_version_to_end(result, version)
-      move, keep = result.partition {|s| s.version.to_s == version.to_s }
+      move, keep = result.partition {|s| s.rubygems_version.to_s == version.to_s }
       keep.concat(move)
     end
   end

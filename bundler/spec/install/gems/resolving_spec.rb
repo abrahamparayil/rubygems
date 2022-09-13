@@ -159,7 +159,7 @@ RSpec.describe "bundle install with install-time dependencies" do
 
         bundle :install, :env => { "BUNDLER_DEBUG_RESOLVER" => "1", "DEBUG" => "1" }
 
-        expect(out).to include("BUNDLER: Starting resolution")
+        expect(out).to include("Resolving dependencies...")
       end
     end
 
@@ -173,7 +173,7 @@ RSpec.describe "bundle install with install-time dependencies" do
 
         bundle :install, :env => { "DEBUG_RESOLVER" => "1", "DEBUG" => "1" }
 
-        expect(out).to include("BUNDLER: Starting resolution")
+        expect(out).to include("Resolving dependencies...")
       end
     end
 
@@ -187,12 +187,10 @@ RSpec.describe "bundle install with install-time dependencies" do
 
         bundle :install, :env => { "DEBUG_RESOLVER_TREE" => "1", "DEBUG" => "1" }
 
-        activated_groups = "net_b (1.0) (ruby)"
-
         expect(out).to include(" net_b").
-          and include("BUNDLER: Starting resolution").
-          and include("BUNDLER: Finished resolution").
-          and include("Attempting to activate [#{activated_groups}]")
+          and include("Resolving dependencies...").
+          and include("Solution found after 1 attempts:").
+          and include("selecting net_b 1.0")
       end
     end
   end

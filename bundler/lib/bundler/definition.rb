@@ -536,7 +536,7 @@ module Bundler
         break if incomplete_specs.empty?
 
         Bundler.ui.debug("The lockfile does not have all gems needed for the current platform though, Bundler will still re-resolve dependencies")
-        @resolve = start_resolution(exclude_specs: incomplete_specs)
+        @resolve = start_resolution(:exclude_specs => incomplete_specs)
         specs = resolve.materialize(dependencies)
       end
 
@@ -547,7 +547,7 @@ module Bundler
     end
 
     def start_resolution(exclude_specs: [])
-      result = resolver.start(expanded_dependencies, resolution_packages, exclude_specs: exclude_specs)
+      result = resolver.start(expanded_dependencies, resolution_packages, :exclude_specs => exclude_specs)
 
       SpecSet.new(SpecSet.new(result).for(dependencies, false, @platforms))
     end
@@ -836,7 +836,6 @@ module Bundler
       metadata_dependencies.each do |dep|
         source_requirements[dep.name] = sources.metadata_source
       end
-      source_requirements[:default_bundler] = source_requirements["bundler"] || sources.default_source
       source_requirements["bundler"] = sources.metadata_source # needs to come last to override
       verify_changed_sources!
       source_requirements

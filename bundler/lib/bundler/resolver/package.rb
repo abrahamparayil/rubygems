@@ -14,6 +14,10 @@ module Bundler
         @prerelease_specified = prerelease_specified
       end
 
+      def to_s
+        @name
+      end
+
       def ==(other)
         @name == other.name
       end
