@@ -5,10 +5,11 @@ module Bundler
     class Package
       attr_reader :name, :platforms, :locked_version
 
-      def initialize(name, platforms, locked_version, force_ruby_platform = false, prerelease_specified = false)
+      def initialize(name, platforms, locked_version, unlock, force_ruby_platform = false, prerelease_specified = false)
         @name = name
         @platforms = platforms
         @locked_version = locked_version
+        @unlock = unlock
         @force_ruby_platform = force_ruby_platform
         @prerelease_specified = prerelease_specified
       end
@@ -19,6 +20,10 @@ module Bundler
 
       def hash
         @name.hash
+      end
+
+      def unlock?
+        @unlock
       end
 
       def force_ruby_platform?
