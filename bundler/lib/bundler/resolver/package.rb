@@ -3,11 +3,12 @@
 module Bundler
   class Resolver
     class Package
-      attr_reader :name, :platforms
+      attr_reader :name, :platforms, :locked_version
 
-      def initialize(name, platforms, force_ruby_platform = false, prerelease_specified = false)
+      def initialize(name, platforms, locked_version, force_ruby_platform = false, prerelease_specified = false)
         @name = name
         @platforms = platforms
+        @locked_version = locked_version
         @force_ruby_platform = force_ruby_platform
         @prerelease_specified = prerelease_specified
       end

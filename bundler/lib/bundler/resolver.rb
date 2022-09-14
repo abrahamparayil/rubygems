@@ -9,35 +9,30 @@ module Bundler
 
     include GemHelpers
 
-    def initialize(source_requirements, base, gem_version_promoter, additional_base_requirements, platforms)
+    def initialize(source_requirements, base, gem_version_promoter, additional_base_requirements)
       @source_requirements = source_requirements
       @base = Resolver::Base.new(base, additional_base_requirements)
       @resolver = Molinillo::Resolver.new(self, self)
       @results_for = {}
       @search_for = {}
-      @platforms = platforms
-      @resolving_only_for_ruby = platforms == [Gem::Platform::RUBY]
       @gem_version_promoter = gem_version_promoter
     end
 
-    def start(requirements, exclude_specs: [])
-      @metadata_requirements, regular_requirements = requirements.partition {|dep| dep.name.end_with?("\0") }
+    def start(requirements, packages, exclude_specs: [])
+      @metadata_requirements = requirements.select {|dep| dep.name.end_with?("\0") }
 
       exclude_specs.each do |spec|
         remove_from_candidates(spec)
       end
 
-      @packages = Hash.new do |h, k|
-        h[k] = Resolver::Package.new(k, @platforms)
-      end
+      @packages = packages
 
       requirements = verify_gemfile_dependencies_are_found!(requirements)
-      result = @resolver.resolve(requirements).
+      @resolver.resolve(requirements).
         map(&:payload).
         map {|sg| sg.to_specs(@packages[sg.name].force_ruby_platform?) }.
-        flatten
-
-      SpecSet.new(SpecSet.new(result).for(regular_requirements, false, @platforms))
+        flatten.
+        uniq
     rescue Molinillo::VersionConflict => e
       conflicts = e.conflicts
 
@@ -115,7 +110,7 @@ module Bundler
         ruby_specs = select_best_platform_match(specs, Gem::Platform::RUBY)
         groups << SpecGroup.new(ruby_specs) if ruby_specs.any?
 
-        next groups if @resolving_only_for_ruby || platform_specs == ruby_specs
+        next groups if platform_specs == ruby_specs
 
         groups << SpecGroup.new(platform_specs)
 
@@ -216,10 +211,10 @@ module Bundler
     def verify_gemfile_dependencies_are_found!(requirements)
       requirements.map do |requirement|
         name = requirement.name
-        @packages[name] = Resolver::Package.new(name, requirement.gem_platforms(@platforms), requirement.force_ruby_platform, requirement.prerelease?)
 
         next requirement if name == "bundler"
-        next if requirement.gem_platforms(@platforms).empty?
+        next if @packages[name].platforms.empty?
+
         next requirement unless search_for(requirement).empty?
         next unless requirement.current_platform?
 
