@@ -57,7 +57,7 @@ module Bundler
       end
 
       def to_s
-        return @rubygems_version.to_s if @platforms.empty?
+        return @rubygems_version.to_s if @platforms.empty? || @ruby_only
 
         "#{@rubygems_version} (#{@platforms.join(", ")})"
       end
