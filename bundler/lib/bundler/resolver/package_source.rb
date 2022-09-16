@@ -100,7 +100,13 @@ module Bundler
             dep_constraint = PubGrub::VersionConstraint.new(dep_package, :range => dep_constraint)
           end
 
-          PubGrub::Incompatibility.new([PubGrub::Term.new(self_constraint, true), PubGrub::Term.new(dep_constraint, false)], :cause => :dependency)
+          dep_term = PubGrub::Term.new(dep_constraint, false)
+
+          custom_explanation = if dep_package.name.end_with?("\0") && package.root?
+            "current #{dep_package.name.strip} version is #{dep_constraint_name}"
+          end
+
+          PubGrub::Incompatibility.new([PubGrub::Term.new(self_constraint, true), dep_term], :cause => :dependency, :custom_explanation => custom_explanation)
         end
       end
 

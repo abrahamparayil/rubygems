@@ -16,7 +16,7 @@ module Bundler
       end
 
       def to_s
-        @name
+        @name.delete("\0")
       end
 
       def root?

@@ -13,9 +13,10 @@ module Bundler::PubGrub
 
     attr_reader :terms, :cause
 
-    def initialize(terms, cause:)
+    def initialize(terms, cause:, custom_explanation: nil)
       @cause = cause
       @terms = cleanup_terms(terms)
+      @custom_explanation = custom_explanation
 
       if cause == :dependency && @terms.length != 2
         raise ArgumentError, "a dependency Incompatibility must have exactly two terms. Got #{@terms.inspect}"
@@ -57,7 +58,7 @@ module Bundler::PubGrub
       when :root
         "(root dependency)"
       when :dependency
-        "#{terms[0].to_s(allow_every: true)} depends on #{terms[1].invert}"
+        @custom_explanation || "#{terms[0].to_s(allow_every: true)} depends on #{terms[1].invert}"
       when Bundler::PubGrub::Incompatibility::InvalidDependency
         "#{terms[0].to_s(allow_every: true)} depends on unknown package #{cause.package}"
       when Bundler::PubGrub::Incompatibility::NoVersions
