@@ -1031,11 +1031,10 @@ RSpec.describe "bundle update when a gem depends on a newer version of bundler" 
     G
   end
 
-  it "should explain that bundler conflicted and how to resolve the conflict" do
+  it "should explain that bundler conflicted" do
     bundle "update", :all => true, :raise_on_error => false
     expect(last_command.stdboth).not_to match(/in snapshot/i)
-    expect(err).to match(/current Bundler version/i).
-      and match(/Install the necessary version with `gem install bundler:#{Bundler::VERSION.succ}`/i)
+    expect(err).to match(/no versions in the local ruby installation satisfy bundler = #{Bundler::VERSION.succ}/i)
   end
 end
 

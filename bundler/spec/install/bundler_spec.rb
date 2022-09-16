@@ -37,16 +37,12 @@ RSpec.describe "bundle install" do
       G
 
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
-        Bundler could not find compatible versions for gem "bundler":
-          In Gemfile:
-            bundler (= 0.9.1)
+        Could not find compatible versions
 
-          Current Bundler version:
-            bundler (#{Bundler::VERSION})
-
-        Your bundle requires a different version of Bundler than the one you're running.
-        Install the necessary version with `gem install bundler:0.9.1` and rerun bundler using `bundle _0.9.1_ install`
-        E
+        Because no versions in the local ruby installation satisfy bundler = 0.9.1
+          and Gemfile depends on bundler = 0.9.1,
+          version solving has failed.
+      E
       expect(err).to include(nice_error)
     end
 
@@ -58,16 +54,12 @@ RSpec.describe "bundle install" do
       G
 
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
-        Bundler could not find compatible versions for gem "bundler":
-          In Gemfile:
-            bundler (~> 0.8)
+        Could not find compatible versions
 
-          Current Bundler version:
-            bundler (#{Bundler::VERSION})
-
-        Your bundle requires a different version of Bundler than the one you're running.
-        Install the necessary version with `gem install bundler:0.9.1` and rerun bundler using `bundle _0.9.1_ install`
-        E
+        Because no versions in the local ruby installation satisfy bundler ~> 0.8
+          and Gemfile depends on bundler ~> 0.8,
+          version solving has failed.
+      E
       expect(err).to include(nice_error)
     end
 
@@ -79,15 +71,12 @@ RSpec.describe "bundle install" do
       G
 
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
-        Bundler could not find compatible versions for gem "bundler":
-          In Gemfile:
-            bundler (= 0.9.2)
+        Could not find compatible versions
 
-          Current Bundler version:
-            bundler (#{Bundler::VERSION})
-
-        Your bundle requires a different version of Bundler than the one you're running, and that version could not be found.
-        E
+        Because no versions in the local ruby installation satisfy bundler = 0.9.2
+          and Gemfile depends on bundler = 0.9.2,
+          version solving has failed.
+      E
       expect(err).to include(nice_error)
     end
 
