@@ -34,22 +34,6 @@ module Bundler
         end.flatten.uniq
       end
 
-      def ==(other)
-        return unless other.is_a?(SpecGroup)
-
-        sorted_spec_names == other.sorted_spec_names
-      end
-
-      def eql?(other)
-        return unless other.is_a?(SpecGroup)
-
-        sorted_spec_names.eql?(other.sorted_spec_names)
-      end
-
-      def hash
-        sorted_spec_names.hash
-      end
-
       protected
 
       def sorted_spec_names
