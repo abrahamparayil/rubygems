@@ -128,7 +128,7 @@ module Bundler::PubGrub
       version = source.versions_for(package, unsatisfied_term.constraint.range).first
 
       if version.nil?
-        cause = Incompatibility::NoVersions.new(unsatisfied_term)
+        cause = Incompatibility::NoVersions.new(unsatisfied_term, @source.repository_for(package))
         add_incompatibility Incompatibility.new([unsatisfied_term], cause: cause)
         return package
       end

@@ -540,7 +540,7 @@ RSpec.describe "bundle install with install-time dependencies" do
         Because every version of require_rubygems depends on RubyGems > 9000
           and Gemfile depends on require_rubygems >= 0,
           RubyGems > 9000 is required.
-        So, because current RubyGems version is = 3.3.3,
+        So, because current RubyGems version is = #{Gem::VERSION},
           version solving has failed.
       E
       expect(err).to end_with(nice_error)

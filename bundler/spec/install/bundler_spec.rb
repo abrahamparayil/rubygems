@@ -139,13 +139,14 @@ RSpec.describe "bundle install" do
       G
 
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
-        Bundler could not find compatible versions for gem "activesupport":
-          In Gemfile:
-            activemerchant was resolved to 1.0, which depends on
-              activesupport (>= 2.0.0)
+        Could not find compatible versions
 
-            rails_pinned_to_old_activesupport was resolved to 1.0, which depends on
-              activesupport (= 1.2.3)
+        Because every version of rails_pinned_to_old_activesupport depends on activesupport = 1.2.3
+          and every version of activemerchant depends on activesupport >= 2.0.0,
+          every version of rails_pinned_to_old_activesupport is incompatible with activemerchant >= 0.
+        So, because Gemfile depends on activemerchant >= 0
+          and Gemfile depends on rails_pinned_to_old_activesupport >= 0,
+          version solving has failed.
       E
       expect(err).to include(nice_error)
     end
@@ -166,12 +167,13 @@ RSpec.describe "bundle install" do
       G
 
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
-        Bundler could not find compatible versions for gem "activesupport":
-          In Gemfile:
-            activesupport (= 2.3.5)
+        Could not find compatible versions
 
-            rails_pinned_to_old_activesupport was resolved to 1.0, which depends on
-              activesupport (= 1.2.3)
+        Because every version of rails_pinned_to_old_activesupport depends on activesupport = 1.2.3
+          and Gemfile depends on rails_pinned_to_old_activesupport >= 0,
+          activesupport = 1.2.3 is required.
+        So, because Gemfile depends on activesupport = 2.3.5,
+          version solving has failed.
       E
       expect(err).to include(nice_error)
     end

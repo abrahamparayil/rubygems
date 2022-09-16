@@ -168,7 +168,6 @@ bundler/lib/bundler/remote_specification.rb
 bundler/lib/bundler/resolver.rb
 bundler/lib/bundler/resolver/base.rb
 bundler/lib/bundler/resolver/package.rb
-bundler/lib/bundler/resolver/package_source.rb
 bundler/lib/bundler/resolver/spec_group.rb
 bundler/lib/bundler/resolver/version.rb
 bundler/lib/bundler/retry.rb

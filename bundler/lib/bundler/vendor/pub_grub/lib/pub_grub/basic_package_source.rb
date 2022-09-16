@@ -162,6 +162,10 @@ module Bundler::PubGrub
 
         self_constraint = VersionConstraint.new(package, range: range)
 
+        if !@packages.include?(dep_package)
+          # no such package -> this version is invalid
+        end
+
         dep_constraint = parse_dependency(dep_package, dep_constraint_name)
         if !dep_constraint
           # falsey indicates this dependency was invalid

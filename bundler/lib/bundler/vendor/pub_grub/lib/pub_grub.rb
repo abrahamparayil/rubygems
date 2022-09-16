@@ -24,7 +24,7 @@ module Bundler::PubGrub
       require "logger"
 
       logger = ::Logger.new(STDERR)
-      logger.level = ENV["DEBUG"] ? ::Logger::DEBUG : ::Logger::WARN
+      logger.level = $DEBUG ? ::Logger::DEBUG : ::Logger::WARN
       @logger = logger
     end
   end

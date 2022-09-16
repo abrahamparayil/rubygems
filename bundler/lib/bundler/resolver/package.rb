@@ -3,7 +3,7 @@
 module Bundler
   class Resolver
     class Package
-      attr_reader :name, :platforms, :locked_version
+      attr_reader :name, :platforms, :locked_version, :dependency
 
       def initialize(name, platforms = [], locked_version = nil, unlock = false, dependency = nil, root: false)
         @name = name
@@ -42,6 +42,10 @@ module Bundler
 
       def prerelease_specified?
         @dependency&.prerelease?
+      end
+
+      def current_platform?
+        @dependency&.current_platform?
       end
     end
   end
