@@ -91,8 +91,8 @@ module Bundler::PubGrub
     end
 
     def to_s(allow_every: false)
-      if package == Package.root
-        "root"
+      if package.root?
+        package.to_s
       elsif allow_every && any?
         "every version of #{package}"
       else

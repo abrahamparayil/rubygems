@@ -32,7 +32,7 @@ module Bundler::PubGrub
     end
 
     def failure?
-      terms.empty? || (terms.length == 1 && terms[0].package == Package.root && terms[0].positive?)
+      terms.empty? || (terms.length == 1 && terms[0].package.root? && terms[0].positive?)
     end
 
     def conflict?
@@ -125,7 +125,7 @@ module Bundler::PubGrub
 
       if terms.length != 1 && ConflictCause === cause
         terms = terms.reject do |term|
-          term.positive? && term.package == Package.root
+          term.positive? && term.package.root?
         end
       end
 

@@ -17,6 +17,10 @@ module Bundler::PubGrub
       name <=> other.name
     end
 
+    def root?
+      name == :root
+    end
+
     ROOT = Package.new(:root)
     ROOT_VERSION = Gem::Version.new(0)
 

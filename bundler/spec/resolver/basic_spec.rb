@@ -106,7 +106,7 @@ RSpec.describe "Resolving" do
     dep "chef_app_error"
     expect do
       resolve
-    end.to raise_error(Bundler::PubGrub::SolveFailure)
+    end.to raise_error(Bundler::SolveFailure)
   end
 
   it "raises an exception with the minimal set of conflicting dependencies" do
@@ -120,14 +120,14 @@ RSpec.describe "Resolving" do
     dep "c"
     expect do
       resolve
-    end.to raise_error(Bundler::PubGrub::SolveFailure, <<~E.strip)
+    end.to raise_error(Bundler::SolveFailure, <<~E.strip)
       Could not find compatible versions
 
       Because every version of c depends on a < 1
         and every version of b depends on a >= 2,
         every version of c is incompatible with b >= 0.
-      So, because root depends on b >= 0
-        and root depends on c >= 0,
+      So, because Gemfile depends on b >= 0
+        and Gemfile depends on c >= 0,
         version solving has failed.
     E
   end

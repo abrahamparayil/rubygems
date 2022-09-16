@@ -26,14 +26,20 @@ module Bundler
 
       @packages = packages
 
+      root = Resolver::Package.new(name_for_explicit_dependency_source, :root => true)
+
+      packages[:root] = root
+
       requirements = verify_gemfile_dependencies_are_found!(requirements)
 
       require_relative "resolver/package_source"
       source = Resolver::PackageSource.new(self, requirements, @gem_version_promoter)
-      solver = PubGrub::VersionSolver.new(:source => source)
+      solver = PubGrub::VersionSolver.new(:source => source, :root => root)
       Bundler.ui.info "Resolving dependencies...", debug?
       result = solver.solve
-      result.map {|package, version| version.to_specs(package.force_ruby_platform?) unless package.name == :root }.compact.flatten.uniq
+      result.map {|package, version| version.to_specs(package.force_ruby_platform?) unless package.root? }.compact.flatten.uniq
+    rescue PubGrub::SolveFailure => e
+      raise SolveFailure.new(e.message)
     end
 
     def debug?
@@ -79,6 +85,12 @@ module Bundler
 
     def results_for(name)
       @results_for[name] ||= index_for(name).search(name)
+    end
+
+    def name_for_explicit_dependency_source
+      Bundler.default_gemfile.basename.to_s
+    rescue StandardError
+      "Gemfile"
     end
 
     def requirement_satisfied_by?(requirement, activated, spec)

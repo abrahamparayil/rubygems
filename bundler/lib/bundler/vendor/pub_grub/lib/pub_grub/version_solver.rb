@@ -46,7 +46,7 @@ module Bundler::PubGrub
       if solved?
         logger.info { "Solution found after #{solution.attempted_solutions} attempts:" }
         solution.decisions.each do |package, version|
-          next if package == Package.root
+          next if package.root?
           logger.info { "* #{package} #{version}" }
         end
 

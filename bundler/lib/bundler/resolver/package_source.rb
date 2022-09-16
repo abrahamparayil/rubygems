@@ -6,14 +6,34 @@ require_relative "version"
 module Bundler
   class Resolver
     class PackageSource < PubGrub::BasicPackageSource
-      attr_reader :root_dependencies
-
       def initialize(resolver, root_dependencies, gem_version_promoter)
         @resolver = resolver
         @root_dependencies = to_dependency_hash(root_dependencies)
         @gem_version_promoter = gem_version_promoter
 
-        super()
+        @root_version = Resolver::Version.new(0)
+
+        @cached_versions = Hash.new do |h,k|
+          if k.root?
+            h[k] = [@root_version]
+          else
+            h[k] = all_versions_for(k)
+          end
+        end
+        @sorted_versions = Hash.new {|h,k| h[k] = @cached_versions[k].sort }
+        @version_indexes = Hash.new {|h,k| h[k] = @cached_versions[k].each.with_index.to_h }
+
+        @cached_dependencies = Hash.new do |packages, package|
+          if package.root?
+            packages[package] = {
+              @root_version => @root_dependencies,
+            }
+          else
+            packages[package] = Hash.new do |versions, version|
+              versions[version] = dependencies_for(package, version)
+            end
+          end
+        end
       end
 
       def dependencies_for(package, version)
