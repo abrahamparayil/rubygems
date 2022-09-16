@@ -15,7 +15,6 @@ module Bundler
       @source_requirements = source_requirements
       @base = Resolver::Base.new(base, additional_base_requirements)
       @results_for = {}
-      @search_for = {}
       @gem_version_promoter = gem_version_promoter
     end
 
@@ -39,6 +38,23 @@ module Bundler
       result = solver.solve
       result.map {|package, version| version.to_specs(package.force_ruby_platform?) unless package.root? }.compact.flatten.uniq
     rescue PubGrub::SolveFailure => e
+      incompatibility = e.incompatibility
+
+      names_to_unlock = []
+
+      while incompatibility.conflict?
+        incompatibility = incompatibility.cause.incompatibility
+        incompatibility.terms.each do |term|
+          name = term.package.name
+          names_to_unlock << name if base_requirements[name]
+        end
+      end
+
+      if names_to_unlock.any?
+        @base.unlock_deps(names_to_unlock)
+        retry
+      end
+
       raise SolveFailure.new(e.message)
     end
 
@@ -72,7 +88,7 @@ module Bundler
     end
 
     def search_for(dependency)
-      @search_for[dependency] ||= all_versions_for(@packages[dependency.name]).select {|version| requirement_satisfied_by?(dependency, nil, version.spec_group) }
+      all_versions_for(@packages[dependency.name]).select {|version| requirement_satisfied_by?(dependency, nil, version.spec_group) }
     end
 
     def index_for(name)
@@ -111,12 +127,6 @@ module Bundler
 
         @results_for[name].reject {|s| s.version == spec.version }
       end
-
-      reset_spec_cache
-    end
-
-    def reset_spec_cache
-      @search_for = {}
     end
 
     def verify_gemfile_dependencies_are_found!(requirements)
