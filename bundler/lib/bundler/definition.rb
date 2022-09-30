@@ -493,8 +493,7 @@ module Bundler
             dep.gem_platforms(@platforms),
             @originally_locked_specs[name].first&.version,
             unlock_gem?(name),
-            dep.force_ruby_platform,
-            dep.prerelease?
+            dep
           )
         end
 

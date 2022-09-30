@@ -37,8 +37,7 @@ module Spec
           d.gem_platforms(@platforms),
           originally_locked[name].first&.version,
           unlock_gem,
-          d.force_ruby_platform,
-          d.prerelease?
+          d
         )
       end
       Bundler::Resolver.new(source_requirements, *args[0..2]).start(@deps, packages)
