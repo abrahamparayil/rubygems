@@ -116,6 +116,15 @@ module Bundler::PubGrub
       end
     end
 
+    def next_package_to_try(unsatisfied_terms)
+      unsatisfied_terms.min_by do |term|
+        package = term.package
+        versions = versions_for(package, term.constraint.range)
+
+        [package.depth, versions.count]
+      end.package
+    end
+
     def versions_for(package, range=VersionRange.any)
       versions = range.select_versions(@sorted_versions[package])
 

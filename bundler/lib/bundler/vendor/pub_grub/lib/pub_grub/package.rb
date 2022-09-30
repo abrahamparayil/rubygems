@@ -4,6 +4,7 @@ module Bundler::PubGrub
   class Package
 
     attr_reader :name
+    attr_accessor :depth
 
     def initialize(name)
       @name = name
@@ -21,7 +22,9 @@ module Bundler::PubGrub
     ROOT_VERSION = 0
 
     def self.root
-      ROOT
+      root = ROOT
+      root.depth = 0
+      root
     end
 
     def self.root_version
@@ -30,6 +33,10 @@ module Bundler::PubGrub
 
     def to_s
       name.to_s
+    end
+
+    def root?
+      name == :root
     end
   end
 end
