@@ -16,8 +16,10 @@ module Bundler
         @ruby_only = @platforms == [Gem::Platform::RUBY]
       end
 
-      def to_specs(force_ruby_platform)
-        @spec_group.to_specs(force_ruby_platform)
+      def to_specs(package)
+        return [] if package.meta? || package.root?
+
+        @spec_group.to_specs(package.force_ruby_platform?)
       end
 
       def prerelease?

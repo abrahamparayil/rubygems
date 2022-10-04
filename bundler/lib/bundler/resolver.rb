@@ -57,7 +57,7 @@ module Bundler
       solver = PubGrub::VersionSolver.new(:source => self, :root => root, :logger => logger)
       Bundler.ui.info "Resolving dependencies...\n", debug?
       result = solver.solve
-      result.map {|package, version| version.to_specs(package.force_ruby_platform?) unless package.root? }.compact.flatten.uniq
+      result.map {|package, version| version.to_specs(package) }.flatten.uniq
     rescue PubGrub::SolveFailure => e
       incompatibility = e.incompatibility
 
@@ -149,8 +149,8 @@ module Bundler
 
         dep_term = PubGrub::Term.new(dep_constraint, false)
 
-        custom_explanation = if dep_package.name.end_with?("\0") && package.root?
-          "current #{dep_package.name.strip} version is #{dep_constraint.constraint_string}"
+        custom_explanation = if dep_package.meta? && package.root?
+          "current #{dep_package} version is #{dep_constraint.constraint_string}"
         end
 
         PubGrub::Incompatibility.new([PubGrub::Term.new(self_constraint, true), dep_term], :cause => :dependency, :custom_explanation => custom_explanation)

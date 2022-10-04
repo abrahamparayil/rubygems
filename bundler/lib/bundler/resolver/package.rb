@@ -23,6 +23,10 @@ module Bundler
         @root
       end
 
+      def meta?
+        @name.end_with?("\0")
+      end
+
       def ==(other)
         return false unless other.is_a?(Package)
 
