@@ -21,7 +21,6 @@ module Bundler
       end
 
       root = Resolver::Package.new(name_for_explicit_dependency_source, :root => true)
-      root.depth = 0
 
       packages[:root] = root
 
@@ -96,16 +95,6 @@ module Bundler
       else
         versions
       end
-    end
-
-    def next_package_to_try(unsatisfied_terms)
-      unsatisfied_terms.min_by do |term|
-        package = term.package
-        range = term.constraint.range
-        versions = versions_for(package, range)
-
-        [package.depth, package.depth == 1 && package.prerelease_specified? ? versions.count : versions.count {|version| !version.prerelease? }]
-      end.package
     end
 
     def incompatibilities_for(package, version)

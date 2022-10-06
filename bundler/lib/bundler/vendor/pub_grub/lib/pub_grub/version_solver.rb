@@ -23,6 +23,8 @@ module Bundler::PubGrub
 
       @solution = PartialSolution.new
 
+      @package_depth = { root => 0 }
+
       add_incompatibility Incompatibility.new([
         Term.new(VersionConstraint.any(root), false)
       ], cause: :root)
@@ -105,13 +107,22 @@ module Bundler::PubGrub
       unsatisfied.package
     end
 
+    def next_package_to_try
+      solution.unsatisfied.min_by do |term|
+        package = term.package
+        versions = source.versions_for(package, term.constraint.range.upper_invert)
+
+        [@package_depth[package], versions.count]
+      end.package
+    end
+
     def choose_package_version
       if solution.unsatisfied.empty?
         logger.info "No packages unsatisfied. Solving complete!"
         return nil
       end
 
-      package = source.next_package_to_try(solution.unsatisfied)
+      package = next_package_to_try
       unsatisfied_term = solution.unsatisfied.find { |t| t.package == package }
       version = source.versions_for(package, unsatisfied_term.constraint.range).first
 
@@ -137,9 +148,9 @@ module Bundler::PubGrub
         end
 
         # Update depths of new packages
-        depth = package.depth + 1
+        depth = @package_depth[package] + 1
         incompatibility.terms.each do |term|
-          term.package.depth ||= depth
+          @package_depth[term.package] ||= depth
         end
       end
 
