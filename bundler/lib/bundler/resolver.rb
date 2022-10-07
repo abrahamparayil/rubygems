@@ -21,6 +21,7 @@ module Bundler
       end
 
       root = Resolver::Package.new(name_for_explicit_dependency_source, :root => true)
+      root.depth = 0
 
       packages[:root] = root
 

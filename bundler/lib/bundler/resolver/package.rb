@@ -4,6 +4,7 @@ module Bundler
   class Resolver
     class Package
       attr_reader :name, :platforms, :locked_version, :dependency
+      attr_accessor :depth
 
       def initialize(name, platforms = [], locked_version = nil, unlock = false, dependency = nil, root: false)
         @name = name

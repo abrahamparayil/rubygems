@@ -364,12 +364,6 @@ module Bundler::PubGrub
       "#<#{self.class} #{to_s}>"
     end
 
-    def upper_invert
-      return self.class.empty unless max
-
-      VersionRange.new(min: max, include_min: !include_max)
-    end
-
     def invert
       return self.class.empty if any?
 
