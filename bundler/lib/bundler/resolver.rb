@@ -12,7 +12,6 @@ module Bundler
     def initialize(source_requirements, base, gem_version_promoter, additional_base_requirements)
       @source_requirements = source_requirements
       @base = Resolver::Base.new(base, additional_base_requirements)
-      @results_for = {}
       @gem_version_promoter = gem_version_promoter
     end
 
@@ -205,7 +204,7 @@ module Bundler
     end
 
     def results_for(name)
-      @results_for[name] ||= index_for(name).search(name)
+      index_for(name).search(name)
     end
 
     def name_for_explicit_dependency_source
@@ -226,12 +225,6 @@ module Bundler
 
     def remove_from_candidates(spec)
       @base.delete(spec)
-
-      @results_for.keys.each do |name|
-        next unless name == spec.name
-
-        @results_for[name].reject {|s| s.version == spec.version }
-      end
     end
 
     def verify_gemfile_dependencies_are_found!(dependencies)
