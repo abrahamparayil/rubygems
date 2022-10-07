@@ -56,7 +56,10 @@ RSpec.describe "bundle install" do
       nice_error = <<-E.strip.gsub(/^ {8}/, "")
         Could not find compatible versions
 
-        Because no versions in the local ruby installation satisfy bundler ~> 0.8
+        Because rails >= 3.0 depends on bundler >= 0.9.0.pre
+          and no versions in the local ruby installation satisfy bundler >= 0.9.0.pre, < 1.A,
+          rails >= 3.0 requires bundler >= 1.A.
+        So, because Gemfile depends on rails = 3.0
           and Gemfile depends on bundler ~> 0.8,
           version solving has failed.
       E
